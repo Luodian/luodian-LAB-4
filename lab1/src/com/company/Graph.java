@@ -1,291 +1,387 @@
 package com.company;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Random;
+import java.util.Vector;
+
+/*
+ * @author:
+ * @param:
+ * @return:
+ */
 
 import javax.swing.JFrame;
 
-public class Graph
-{
-    int n;
-    int t;
+public class Graph {
+    int			     n;
+    int			     t;
     public ArrayList<String> words;
-    public int [][] edges;
-    Map<String,Integer> mark = new HashMap<String, Integer>();
-    private Vector<int[]> uvtemp = new Vector<int[]>();//ÓÃÓÚ¼ÇÂ¼dijsktraÖÐdist(v)-dist(u) = c(u,v)µÄ±ß 
-    public int[] lengths;
-    Graph(String[] strings)
-    {
-        int now=0;
-        words=new ArrayList<String>();
-        for(String s1 : strings)
-        {
-            if(!mark.containsKey(s1))
-            {
-                mark.put(new String(s1),new Integer(now++));
-                words.add(s1);
-            }
-        }
-        n=words.size();
-        edges=new int[n][n];
-        for(int i=0;i<n;++i)
-        {
-            for(int j=0;j<n;++j)
-            {
-                edges[i][j]=0;
-            }
-        }
-        String s3="";
-        int a,b;
-        for(String s2 : strings)
-        {
-            if(s3!="")
-            {
-                ++(edges[mark.get(s3)][mark.get(s2)]);
-            }
-            s3=s2;
-        }
+    public int[][]	     edges;
+    Map<String, Integer>     mark   = new HashMap<String, Integer>();
+    private Vector<int[]>    uvtemp = new Vector<int[]>();	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     // ï¿½ï¿½ï¿½Ú¼ï¿½Â¼dijsktraï¿½ï¿½dist(v)-dist(u)
+                                                                     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     // =
+                                                                     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     // c(u,v)ï¿½Ä±ï¿½
+    public int[]	     lengths;
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    Graph(String[] strings) {
+	int now = 0;
+	words = new ArrayList<String>();
+	for (String s1 : strings) {
+	    if (!mark.containsKey(s1)) {
+		mark.put(new String(s1), new Integer(now++));
+		words.add(s1);
+	    }
+	}
+	n = words.size();
+	edges = new int[n][n];
+	for (int i = 0; i < n; ++i) {
+	    for (int j = 0; j < n; ++j) {
+		edges[i][j] = 0;
+	    }
+	}
+	String s3 = "";
+	int a, b;
+	for (String s2 : strings) {
+	    if (s3 != "") {
+		++(edges[mark.get(s3)][mark.get(s2)]);
+	    }
+	    s3 = s2;
+	}
     }
-    public boolean isTheWordExisted(String word)
-    {
-    	return mark.containsKey(word);
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    public boolean isTheWordExisted(String word) {
+	return mark.containsKey(word);
     }
-    String[] queryBridgeWords(String word1,String word2)
-    {
-        if(!mark.containsKey(word1) || !mark.containsKey(word2))
-            return null;
-        int mark1=mark.get(word1),mark2=mark.get(word2);
-        ArrayList<String> result=new ArrayList<String>();
-        int num=0;
-        for(int i=0;i<n;++i)
-        {
-            if(edges[mark1][i]!=0 && edges[i][mark2]!=0)
-            {
-                result.add(words.get(i));
-            }
-        }
-        return result.toArray(new String[result.size()]);
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    String[] queryBridgeWords(String word1, String word2) {
+	if (!mark.containsKey(word1) || !mark.containsKey(word2))
+	    return null;
+	int mark1 = mark.get(word1), mark2 = mark.get(word2);
+	ArrayList<String> result = new ArrayList<String>();
+	int num = 0;
+	for (int i = 0; i < n; ++i) {
+	    if (edges[mark1][i] != 0 && edges[i][mark2] != 0) {
+		result.add(words.get(i));
+	    }
+	}
+	return result.toArray(new String[result.size()]);
     }
-    String generateNewText(String inputText)
-    {
-        Random rand =new Random();
-        inputText = inputText.replaceAll("[^a-z^A-Z]", " ");
-        String[] words=inputText.split("\\s+");
-        String insert="";
-        String[] BridgeWords;
-        for(int i=0;i<(words.length-1);++i)
-        {
-            BridgeWords=queryBridgeWords(words[i],words[i+1]);
-            if(BridgeWords!=null && BridgeWords.length>0)
-            {
-                insert=BridgeWords[rand.nextInt(BridgeWords.length)];
-                words[i]+=" ";
-                words[i]+=insert;
-            }
-        }
-        String result="";
-        for(int i=0;i<words.length;++i)
-        {
-            result+=words[i];
-            result+=" ";
-        }
-        return result;
+
+    String generateNewText(String inputText) {
+	Random rand = new Random();
+	inputText = inputText.replaceAll("[^a-z^A-Z]", " ");
+	String[] words = inputText.split("\\s+");
+	String insert = "";
+	String[] BridgeWords;
+	for (int i = 0; i < (words.length - 1); ++i) {
+	    BridgeWords = queryBridgeWords(words[i], words[i + 1]);
+	    if (BridgeWords != null && BridgeWords.length > 0) {
+		insert = BridgeWords[rand.nextInt(BridgeWords.length)];
+		words[i] += " ";
+		words[i] += insert;
+	    }
+	}
+	String result = "";
+	for (int i = 0; i < words.length; ++i) {
+	    result += words[i];
+	    result += " ";
+	}
+	return result;
     }
-  public  void show(String path,JFrame f)
-    {
-        new Drawgraph(words,edges,path,f);
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    public void show(String path, JFrame f) {
+	new Drawgraph(words, edges, path, f);
     }
-  public  void show_path_all(String[] paths,JFrame f)
-  {
-      new DrawpathAll(words,edges,paths, f,lengths);
-  }
-    public void showTheGraphByConsole(){
-        if( n == 0 ) System.out.println("µ±Ç°ÁÚ½Ó±íÎª¿Õ£¡");
-        else{
-            /*for (Map.Entry<String,Integer> e:mark.entrySet()) {
-                System.out.println(e.getValue()+"ºÅµ¥´Ê:"+e.getKey());
-            }*/
-            int i=0;
-            for (String e:words) {
-                System.out.println((i++)+"ºÅµ¥´Ê:"+e);
-            }
-            for (int j = 0; j < n; j++) {
-                for (int k = 0; k < n; k++) {
-                    System.out.print(edges[j][k]+" ");
-                }
-                System.out.println();
-            }
-        }
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    public void show_path_all(String[] paths, JFrame f) {
+	new DrawpathAll(words, edges, paths, f, lengths);
     }
-    public String[] calcShortestPath(String word1,String word2){
-    	 String[] result=new String[n];
-         Vector<String> returnItem = new Vector<String>();
-         if(!mark.containsKey(word1))
-         {
-        	 System.out.println("µ±Ç°Í¼ÖÐ²»´æÔÚ"+word1+"Çë¼ì²éÄãµÄÊäÈë");
-        	 return null;
-         }
-         else{
-             int source=mark.get(word1);
-             int aim = mark.get(word2);
-             int[] pathlength=new int[n];
-             int[] path=new int[n];
-             int[][] edgesTemp=new int[n][n];
-             for (int k = 0; k < n; k++) {
-                 path[k]=-1;
-                 pathlength[k]=Integer.MAX_VALUE;
-                 for (int i = 0; i < n; i++) {
-                     if (edges[k][i]>0) edgesTemp[k][i]=edges[k][i];
-                     else    edgesTemp[k][i]=Integer.MAX_VALUE;
-                 }
-             }
-             pathlength[source]=0;
-             PriorityQueue<Integer> priorityQueue=new PriorityQueue<>(n, new Comparator<Integer>() {
-                 @Override
-                 public int compare(Integer o1, Integer o2) {
-                     if (pathlength[o1]>pathlength[o2]) return 1;
-                     else if (pathlength[o2] < pathlength[o1]) return -1;
-                     else return 0;
-                 }
-             });
-             for (int i = 0; i < n; i++) priorityQueue.add(i);
-             while(!priorityQueue.isEmpty()){
-                 int temp=priorityQueue.peek();
-                 for (int i = 0; i < n; i++) relex(temp,i,edgesTemp,pathlength,path,priorityQueue);
-                 priorityQueue.poll();//ÕâÀï±ØÐë°ÑÕâ¸öpoll·ÅÔÚÕâÀï£¬ÒòÎªÈç¹û·ÅÔÚpeekÄÇÀï£¬ÓÅÏÈ¶ÓÁÐÔÚÖØÅÅÊÇ¸ù¾ÝpathlengthµÄÖµµÄ£¬ÌÈÈôÔÚËÉ³ÚÇ°µ¯³ö¼´ÔÚÄÇÊ±½øÐÐÖØÅÄ£¬pathlengthµÄÖµ»¹Ã»¸úÐÂ
-             }
-             for (int i = 0; i < n; i++) {
-                 if (path[i]==-1||i==source) continue;
-                 else{
-                     int temp=i;
-                     result[i]=new String(word1);
-                     Vector<String> resultTemp=new Vector<String>();
-                     while(temp!=source){
-                         resultTemp.add(words.get(temp));
-                         temp=path[temp];
-                     }
-                     for (int j = resultTemp.size()-1; j >=0 ; j--) {
-                         result[i]+=" "+resultTemp.get(j);
-                     }
-                 }
-             }
-            returnItem.add(result[aim]);//¼ÓÈëÒ»Ìõ×î¶ÌÂ·
-            String[] spiltItem = result[aim].split("\\s+");//½«¸Ã×î¶ÌÂ·°´µ¥´Ê·Ö½â
-            HashMap<String, Integer> hashMap= new HashMap<String,Integer>();//½¨Á¢¹þÏ£±í
-            for(int i=0;i<spiltItem.length;i++){
-            	hashMap.put(spiltItem[i], i);
-            }
-            for (int[] e : uvtemp) {
-				if (hashMap.containsKey(words.get(e[1]))) {//ÅÐ¶Ï¸Ã£¨v£©ÊÇ·ñÔÚ×î¶ÌÂ·¾¶ÉÏ£¬ÈôÊÇ£¬Ôò½«µ±Ç°×î¶ÌÂ·¾¶ÉÏv->aim¶Î½ÓÉÏsourceµ½u¶Î×î¶ÌÂ·¾¶ÔÙ½ÓÉÏ±ß(u,v)¾ÍÊÇÒ»ÌõÐÂµÄ×î¶ÌÂ·
-					System.out.println(words.get(e[0])+"->"+words.get(e[1]));
-					String newPath = result[e[0]];
-					int flag=0;
-					for(int i = 0;i<spiltItem.length;i++)
-					{
-						if(flag==1||spiltItem[i].equals(words.get(e[1]))){
-							flag=1;
-							newPath+=" "+spiltItem[i];
-						}
-					}
-					returnItem.addElement(newPath);
-				}
-			}
-            String[] results = new String[returnItem.size()];
-            for(int i =0;i<returnItem.size();i++)
-            	results[i]=new String(returnItem.get(i));
-            lengths=new int[1];
-            lengths[0]=pathlength[aim];
-            uvtemp.clear();//ÕâÀï±ØÐë½«È«¾Ö±äÁ¿Çå¿Õ£¬·ñÔòÏÂ´Îµ÷ÓÃÊ±»á¼ÌÐøÊ¹ÓÃÉÏ´ÎÒÅÁôµÄ(u,v)
-            return results;
-         }
-    }
-    public String[] calcShortestPathOfAll(String word1){
-        String[] result=new String[n];
-        if(!mark.containsKey(word1))
-            System.out.println("µ±Ç°Í¼ÖÐ²»´æÔÚ"+word1+"Çë¼ì²éÄãµÄÊäÈë");
-        else{
-            int source=mark.get(word1);
-            int[] pathlength=new int[n];
-            int[] path=new int[n];
-            int[][] edgesTemp=new int[n][n];
-            for (int k = 0; k < n; k++) {
-                path[k]=-1;
-                pathlength[k]=Integer.MAX_VALUE;
-                for (int i = 0; i < n; i++) {
-                    if (edges[k][i]>0) edgesTemp[k][i]=edges[k][i];
-                    else    edgesTemp[k][i]=Integer.MAX_VALUE;
-                }
-            }
-            pathlength[source]=0;
-            PriorityQueue<Integer> priorityQueue=new PriorityQueue<>(n, new Comparator<Integer>() {
-                @Override
-                public int compare(Integer o1, Integer o2) {
-                    if (pathlength[o1]>pathlength[o2]) return 1;
-                    else if (pathlength[o2] < pathlength[o1]) return -1;
-                    else return 0;
-                }
-            });
-            for (int i = 0; i < n; i++) priorityQueue.add(i);
-            while(!priorityQueue.isEmpty()){
-                int temp=priorityQueue.peek();
-                for (int i = 0; i < n; i++) relex(temp,i,edgesTemp,pathlength,path,priorityQueue);
-                priorityQueue.poll();//ÕâÀï±ØÐë°ÑÕâ¸öpoll·ÅÔÚÕâÀï£¬ÒòÎªÈç¹û·ÅÔÚpeekÄÇÀï£¬ÓÅÏÈ¶ÓÁÐÔÚÖØÅÅÊÇ¸ù¾ÝpathlengthµÄÖµµÄ£¬ÌÈÈôÔÚËÉ³ÚÇ°µ¯³ö¼´ÔÚÄÇÊ±½øÐÐÖØÅÄ£¬pathlengthµÄÖµ»¹Ã»¸úÐÂ
-            }
-            for (int i = 0; i < n; i++) {
-                if (path[i]==-1||i==source) continue;
-                else{
-                    int temp=i;
-                    result[i]=new String(word1);
-                    Vector<String> resultTemp=new Vector<String>();
-                    while(temp!=source){
-                        resultTemp.add(words.get(temp));
-                        temp=path[temp];
-                    }
-                    for (int j = resultTemp.size()-1; j >=0 ; j--) {
-                        result[i]+=" "+resultTemp.get(j);
-                    }
-                }
-            }
-            lengths=new int[n];
-            for(int i=0;i<n;i++) lengths[i]=pathlength[i];
-        }
-        return result;
-    }
-    public String randomWalk() {
-        if (n == 0) return null;//ÈôÎª¿Õ£¬·µ»Økong
-        int rand=(int)(Math.random()*n);
-        boolean[][] isEdgeVisited=new boolean[n][n];
-        for (int i= 0 ;i< n ;i++)//½¨Á¢±ß·ÃÎÊ¾ØÕó£¬Í¬Ê±³õÊ¼»¯£¬ÁÚ½Ó¾ØÕóÖÐÎª0µÄÔªËØ±êÎªfalse,Í¬Ê±ÔÚºóÐò´¦ÀíÖÐ£¬µ±±ß±»·ÃÎÊ£¬½«ÏàÓ¦¸ÄÎªfalse
-            for(int j= 0 ;j <n ;j++)
-                if (edges[i][j]==0) isEdgeVisited[i][j]=false;
-                else isEdgeVisited[i][j]=true;
-        return words.get(rand)+" "+DFSByEdge(rand,isEdgeVisited);
-    }
-    private String DFSByEdge(int sourceNode,boolean[][] isEdgeVisited){//ÒòÎªÕâÕâ¸öÎÊÌâÖÐ£¬Ëæ»úÓÎ×ßÖ»»á³öÏÖÒ»´ÎÉîËÑ£¬ËùÒÔÕâ¸öÅÐ¶Ï¾ØÕóÉèÖÃÎª²ÎÊýÊÇ¿ÉÒÔµÄ
-        Vector<Integer> chooseEnable=new Vector<Integer>();//¿ÉÑ¡¶¥µã
-        for(int i=0;i<n;i++)
-            if (isEdgeVisited[sourceNode][i]==true)
-                chooseEnable.add(i);
-        if (chooseEnable.isEmpty()) return "";//Èô¸Ã½Úµã²»ÔÙÓÐ³ö±ß£¬ÊÂÊµÉÏÃ¿´Î·ÃÎÊÒ»Ìõ±ß½«Æä´ÓÅÐ¶Ï¾ØÕóÖÐÉ¾È¥£¬¹ÊÁ½ÖÖÇé¿öµÝ¹é½áÊøÌõ¼þÊÇÒ»ÑùµÄ
-        int length=chooseEnable.size();
-        int aimNode=(int)(Math.random()*length);//Ëæ»úÑ¡ÔñÏÂÒ»¸ö·ÃÎÊµÄ¶¥µã
-        isEdgeVisited[sourceNode][chooseEnable.get(aimNode)]=false;
-        return words.get(chooseEnable.get(aimNode))+" "+DFSByEdge(chooseEnable.get(aimNode),isEdgeVisited);
-    }
-    private void relex(int u,int v,int[][] edges,int[] pathlength,int[] path,PriorityQueue<Integer> priorityQueue){
-        if ((long)pathlength[v]>pathlength[u]+(long)edges[u][v])
-        {
-            pathlength[v]=pathlength[u]+edges[u][v];
-            priorityQueue.remove(v);
-            priorityQueue.add(v);
-            path[v]=u;
-        }
-        else if (((long)pathlength[v]==pathlength[u]+(long)edges[u][v])&&pathlength[v]!=Integer.MAX_VALUE&&pathlength[u]!=Integer.MAX_VALUE&&edges[u][v]!=Integer.MAX_VALUE) {
-        	System.out.println(pathlength[v]+"!!!!"+(pathlength[u]+(long)edges[u][v]));
-			int[] t = new int[2];
-			t[0] = u;
-			t[1] = v;
-			uvtemp.add(t);
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    public void showTheGraphByConsole() {
+	if (n == 0)
+	    System.out.println("ï¿½ï¿½Ç°ï¿½Ú½Ó±ï¿½Îªï¿½Õ£ï¿½");
+	else {
+	    /*
+	     * for (Map.Entry<String,Integer> e:mark.entrySet()) {
+	     * System.out.println(e.getValue()+"ï¿½Åµï¿½ï¿½ï¿½:"+e.getKey());
+	     * }
+	     */
+	    int i = 0;
+	    for (String e : words) {
+		System.out.println((i++) + "ï¿½Åµï¿½ï¿½ï¿½:" + e);
+	    }
+	    for (int j = 0; j < n; j++) {
+		for (int k = 0; k < n; k++) {
+		    System.out.print(edges[j][k] + " ");
 		}
+		System.out.println();
+	    }
+	}
+    }
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    public String[] calcShortestPath(String word1, String word2) {
+	String[] result = new String[n];
+	Vector<String> returnItem = new Vector<String>();
+	if (!mark.containsKey(word1)) {
+	    System.out.println("ï¿½ï¿½Ç°Í¼ï¿½Ð²ï¿½ï¿½ï¿½ï¿½ï¿½" + word1 + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+	    return null;
+	}
+	else {
+	    int source = mark.get(word1);
+	    int aim = mark.get(word2);
+	    int[] pathlength = new int[n];
+	    int[] path = new int[n];
+	    int[][] edgesTemp = new int[n][n];
+	    for (int k = 0; k < n; k++) {
+		path[k] = -1;
+		pathlength[k] = Integer.MAX_VALUE;
+		for (int i = 0; i < n; i++) {
+		    if (edges[k][i] > 0)
+			edgesTemp[k][i] = edges[k][i];
+		    else
+			edgesTemp[k][i] = Integer.MAX_VALUE;
+		}
+	    }
+	    pathlength[source] = 0;
+	    PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(n, new Comparator<Integer>() {
+		@Override
+		public int compare(Integer o1, Integer o2) {
+		    if (pathlength[o1] > pathlength[o2])
+			return 1;
+		    else if (pathlength[o2] < pathlength[o1])
+			return -1;
+		    else
+			return 0;
+		}
+	    });
+	    for (int i = 0; i < n; i++)
+		priorityQueue.add(i);
+	    while (!priorityQueue.isEmpty()) {
+		int temp = priorityQueue.peek();
+		for (int i = 0; i < n; i++)
+		    relex(temp, i, edgesTemp, pathlength, path, priorityQueue);
+		priorityQueue.poll();// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pollï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï£¬ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½peekï¿½ï¿½ï¿½ï£¬ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½pathlengthï¿½ï¿½Öµï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É³ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½pathlengthï¿½ï¿½Öµï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½
+	    }
+	    for (int i = 0; i < n; i++) {
+		if (path[i] == -1 || i == source)
+		    continue;
+		else {
+		    int temp = i;
+		    result[i] = new String(word1);
+		    Vector<String> resultTemp = new Vector<String>();
+		    while (temp != source) {
+			resultTemp.add(words.get(temp));
+			temp = path[temp];
+		    }
+		    for (int j = resultTemp.size() - 1; j >= 0; j--) {
+			result[i] += " " + resultTemp.get(j);
+		    }
+		}
+	    }
+	    returnItem.add(result[aim]);// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Â·
+	    String[] spiltItem = result[aim].split("\\s+");// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½Ê·Ö½ï¿½
+	    HashMap<String, Integer> hashMap = new HashMap<String, Integer>();// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï£ï¿½ï¿½
+	    for (int i = 0; i < spiltItem.length; i++) {
+		hashMap.put(spiltItem[i], i);
+	    }
+	    for (int[] e : uvtemp) {
+		if (hashMap.containsKey(words.get(e[1]))) {// ï¿½Ð¶Ï¸Ã£ï¿½vï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½Ï£ï¿½ï¿½ï¿½ï¿½Ç£ï¿½ï¿½ò½«µï¿½Ç°ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½v->aimï¿½Î½ï¿½ï¿½ï¿½sourceï¿½ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½Ù½ï¿½ï¿½Ï±ï¿½(u,v)ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½ï¿½Â·
+		    System.out.println(words.get(e[0]) + "->" + words.get(e[1]));
+		    String newPath = result[e[0]];
+		    int flag = 0;
+		    for (int i = 0; i < spiltItem.length; i++) {
+			if (flag == 1 || spiltItem[i].equals(words.get(e[1]))) {
+			    flag = 1;
+			    newPath += " " + spiltItem[i];
+			}
+		    }
+		    returnItem.addElement(newPath);
+		}
+	    }
+	    String[] results = new String[returnItem.size()];
+	    for (int i = 0; i < returnItem.size(); i++)
+		results[i] = new String(returnItem.get(i));
+	    lengths = new int[1];
+	    lengths[0] = pathlength[aim];
+	    uvtemp.clear();// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë½«È«ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½Õ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´Îµï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(u,v)
+	    return results;
+	}
+    }
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    public String[] calcShortestPathOfAll(String word1) {
+	String[] result = new String[n];
+	if (!mark.containsKey(word1))
+	    System.out.println("ï¿½ï¿½Ç°Í¼ï¿½Ð²ï¿½ï¿½ï¿½ï¿½ï¿½" + word1 + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+	else {
+	    int source = mark.get(word1);
+	    int[] pathlength = new int[n];
+	    int[] path = new int[n];
+	    int[][] edgesTemp = new int[n][n];
+	    for (int k = 0; k < n; k++) {
+		path[k] = -1;
+		pathlength[k] = Integer.MAX_VALUE;
+		for (int i = 0; i < n; i++) {
+		    if (edges[k][i] > 0)
+			edgesTemp[k][i] = edges[k][i];
+		    else
+			edgesTemp[k][i] = Integer.MAX_VALUE;
+		}
+	    }
+	    pathlength[source] = 0;
+	    PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(n, new Comparator<Integer>() {
+		@Override
+		public int compare(Integer o1, Integer o2) {
+		    if (pathlength[o1] > pathlength[o2])
+			return 1;
+		    else if (pathlength[o2] < pathlength[o1])
+			return -1;
+		    else
+			return 0;
+		}
+	    });
+	    for (int i = 0; i < n; i++)
+		priorityQueue.add(i);
+	    while (!priorityQueue.isEmpty()) {
+		int temp = priorityQueue.peek();
+		for (int i = 0; i < n; i++)
+		    relex(temp, i, edgesTemp, pathlength, path, priorityQueue);
+		priorityQueue.poll();// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pollï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï£¬ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½peekï¿½ï¿½ï¿½ï£¬ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½pathlengthï¿½ï¿½Öµï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É³ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½pathlengthï¿½ï¿½Öµï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½
+	    }
+	    for (int i = 0; i < n; i++) {
+		if (path[i] == -1 || i == source)
+		    continue;
+		else {
+		    int temp = i;
+		    result[i] = new String(word1);
+		    Vector<String> resultTemp = new Vector<String>();
+		    while (temp != source) {
+			resultTemp.add(words.get(temp));
+			temp = path[temp];
+		    }
+		    for (int j = resultTemp.size() - 1; j >= 0; j--) {
+			result[i] += " " + resultTemp.get(j);
+		    }
+		}
+	    }
+	    lengths = new int[n];
+	    for (int i = 0; i < n; i++)
+		lengths[i] = pathlength[i];
+	}
+	return result;
+    }
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    public String randomWalk() {
+	if (n == 0)
+	    return null;// ï¿½ï¿½Îªï¿½Õ£ï¿½ï¿½ï¿½ï¿½ï¿½kong
+	int rand = (int) (Math.random() * n);
+	boolean[][] isEdgeVisited = new boolean[n][n];
+	for (int i = 0; i < n; i++)// ï¿½ï¿½ï¿½ï¿½ï¿½ß·ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ú½Ó¾ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½Ôªï¿½Ø±ï¿½Îªfalse,Í¬Ê±ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ß±ï¿½ï¿½ï¿½ï¿½Ê£ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Îªfalse
+	    for (int j = 0; j < n; j++)
+		if (edges[i][j] == 0)
+		    isEdgeVisited[i][j] = false;
+		else
+		    isEdgeVisited[i][j] = true;
+	return words.get(rand) + " " + DFSByEdge(rand, isEdgeVisited);
+    }
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    private String DFSByEdge(int sourceNode, boolean[][] isEdgeVisited) {// ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ñ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½Ôµï¿½
+	Vector<Integer> chooseEnable = new Vector<Integer>();// ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½
+	for (int i = 0; i < n; i++)
+	    if (isEdgeVisited[sourceNode][i] == true)
+		chooseEnable.add(i);
+	if (chooseEnable.isEmpty())
+	    return "";// ï¿½ï¿½ï¿½Ã½Úµã²»ï¿½ï¿½ï¿½Ð³ï¿½ï¿½ß£ï¿½ï¿½ï¿½Êµï¿½ï¿½Ã¿ï¿½Î·ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ß½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½É¾È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
+	int length = chooseEnable.size();
+	int aimNode = (int) (Math.random() * length);// ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ÊµÄ¶ï¿½ï¿½ï¿½
+	isEdgeVisited[sourceNode][chooseEnable.get(aimNode)] = false;
+	return words.get(chooseEnable.get(aimNode)) + " " + DFSByEdge(chooseEnable.get(aimNode), isEdgeVisited);
+    }
+
+    /*
+     * @comment:
+     * @param:
+     * @return:
+     */
+
+    private void relex(int u, int v, int[][] edges, int[] pathlength, int[] path,
+            PriorityQueue<Integer> priorityQueue) {
+	if (pathlength[v] > pathlength[u] + (long) edges[u][v]) {
+	    pathlength[v] = pathlength[u] + edges[u][v];
+	    priorityQueue.remove(v);
+	    priorityQueue.add(v);
+	    path[v] = u;
+	}
+	else if ((pathlength[v] == pathlength[u] + (long) edges[u][v]) && pathlength[v] != Integer.MAX_VALUE
+	        && pathlength[u] != Integer.MAX_VALUE && edges[u][v] != Integer.MAX_VALUE) {
+	    System.out.println(pathlength[v] + "!!!!" + (pathlength[u] + (long) edges[u][v]));
+	    int[] t = new int[2];
+	    t[0] = u;
+	    t[1] = v;
+	    uvtemp.add(t);
+	}
     }
 
 }
